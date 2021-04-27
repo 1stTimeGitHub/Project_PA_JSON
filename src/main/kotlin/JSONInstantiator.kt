@@ -18,7 +18,7 @@ annotation class Identifier(val id: String)
  * JSONInstantiator is responsible for instantiating data classes into the built JSON model.
  * This class is immutable.
  */
-class JSONInstantiator {
+class JSONInstantiator private constructor(){
     
     companion object {
         /**
@@ -36,8 +36,8 @@ class JSONInstantiator {
      */
     fun instantiate(obj: Any): JSONComponent {
         when(obj) {
-            is Boolean, is Char, is Short, is Int, is Long, is Float, is Double, is String -> return JSONValue.newValue(obj)
-            is Enum<*> -> return JSONValue.newValue(obj.toString())
+            is Boolean, is Char, is Short, is Int, is Long, is Float, is Double, is String, is Enum<*> -> return JSONValue.newValue(obj)
+            null -> return JSONValue.newValue(JSONNull.newNull())
             is Collection<*> -> return handleCollection(obj.iterator())
             is Map<*,*> -> return handleMap(obj.iterator())
         }

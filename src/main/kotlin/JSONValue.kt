@@ -24,7 +24,10 @@ class JSONValue private constructor(private val value: Any): JSONComponent {
      * @return
      */
     override fun toString(): String {
-        return value.toString()
+        return if(value is String)
+            "\"" + value.toString() + "\""
+        else
+            value.toString()
     }
 
 }
