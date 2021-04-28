@@ -1,18 +1,19 @@
 import java.io.File
 import java.lang.StringBuilder
+import java.nio.file.Path
 
 /**
  *
  */
-class JSONWriter private constructor(private val buffer: StringBuilder, private val file: File, private var indentation: Int): JSONVisitor {
+class JSONSerializer private constructor(private val buffer: StringBuilder, private var indentation: Int): JSONVisitor {
 
     companion object {
         /**
-         * Creates new JSONWriter.
+         * Creates a new JSONWriter.
          * @return a new JSONWriter
          */
-        @JvmStatic fun newWriter(path: String): JSONWriter {
-            return JSONWriter(StringBuilder(), File(path), 0)
+        @JvmStatic fun newSerializer(): JSONSerializer {
+            return JSONSerializer(StringBuilder(), 0)
         }
     }
 
@@ -36,8 +37,9 @@ class JSONWriter private constructor(private val buffer: StringBuilder, private 
         }
 
         indentation--
-        buffer.append("\n}")
-        attemptToFinalizeWriting()
+        buffer.append("\n")
+        writeIndentation()
+        buffer.append("}")
     }
 
     /**
@@ -59,8 +61,9 @@ class JSONWriter private constructor(private val buffer: StringBuilder, private 
         }
 
         indentation--
-        buffer.append("\n]")
-        attemptToFinalizeWriting()
+        buffer.append("\n")
+        writeIndentation()
+        buffer.append("]")
     }
 
     /**
@@ -68,7 +71,27 @@ class JSONWriter private constructor(private val buffer: StringBuilder, private 
      */
     override fun visit(component: JSONValue) {
         buffer.append(component.toString())
-        attemptToFinalizeWriting()
+    }
+
+    /**
+     * Serializes a JSONComponent.
+     * @param rootComponent is the root of the JSON file.
+     */
+    fun serialize(rootComponent: JSONComponent): String {
+        rootComponent.accept(this)
+        return buffer.toString()
+    }
+
+    /**
+     * Writes the serialized contents to a file.
+     * @param path path for the new file.
+     */
+    fun writeToFile(path: Path) {
+        val file = File(path.toString())
+
+        file.bufferedWriter().use { out ->
+            out.write(buffer.toString())
+        }
     }
 
     /**
@@ -77,17 +100,6 @@ class JSONWriter private constructor(private val buffer: StringBuilder, private 
     private fun writeIndentation() {
         for(i in 0 until indentation) {
             buffer.append("\t")
-        }
-    }
-
-    /**
-     * If the indentation reaches 0, the contents of the buffer are written to the file.
-     */
-    private fun attemptToFinalizeWriting() {
-        if(indentation != 0) return
-
-        file.bufferedWriter().use { out ->
-            out.write(buffer.toString())
         }
     }
 
