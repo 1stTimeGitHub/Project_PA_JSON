@@ -34,15 +34,16 @@ class JSONInstantiator private constructor(){
      * @param obj is the object being instantiated.
      * @return a JSONComponent representation of the object.
      */
-    fun instantiate(obj: Any): JSONComponent {
-        when(obj) {
-            is Boolean, is Char, is Short, is Int, is Long, is Float, is Double, is String, is Enum<*> -> return JSONValue.newValue(obj)
-            null -> return JSONValue.newValue(JSONNull.newNull())
-            is Collection<*> -> return handleCollection(obj.iterator())
-            is Map<*,*> -> return handleMap(obj.iterator())
+    fun instantiate(obj: Any?): JSONComponent {
+        return when(obj) {
+            is Boolean, is Char, is Short, is Int, is Long, is Float, is Double, is String, null -> JSONValue.newValue(obj)
+            is Enum<*> -> JSONValue.newValue(obj.toString())
+            is Collection<*> -> handleCollection(obj.iterator())
+            is Map<*,*> -> handleMap(obj.iterator())
+            else -> handleDataClass(obj)
+
         }
 
-        return handleDataClass(obj)
     }
 
     /**
@@ -72,7 +73,7 @@ class JSONInstantiator private constructor(){
 
         while(itr.hasNext()) {
             val pair = itr.next()
-            pair.value?.let { instantiate(it) }?.let { jObject.addComponent(pair.key.toString(), it) }
+            jObject.addComponent(pair.key.toString(), instantiate(pair.value))
         }
 
         return jObject
@@ -90,14 +91,10 @@ class JSONInstantiator private constructor(){
             if(it.hasAnnotation<ExcludeProperty>()) return@forEach
 
             if(it.hasAnnotation<Identifier>()) {
-                it.findAnnotation<Identifier>()?.let { it1 ->
-                    it.getter.call(obj)?.let { it2 -> instantiate(it2) }?.let { it3 ->
-                        jObject.addComponent(it1.id, it3)
-                    }
-                }
+                it.findAnnotation<Identifier>()?.let { it1 -> jObject.addComponent(it1.id, instantiate(it.getter.call(obj))) }
             }
             else {
-                it.call(obj)?.let { it1 -> instantiate(it1) }?.let { it2 -> jObject.addComponent(it.name, it2) }
+                jObject.addComponent(it.name, instantiate(it.getter.call(obj)))
             }
         }
 

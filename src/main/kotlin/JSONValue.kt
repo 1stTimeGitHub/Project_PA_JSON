@@ -1,13 +1,13 @@
 /**
  *
  */
-class JSONValue private constructor(private val value: Any): JSONComponent {
+class JSONValue private constructor(private val value: Any?): JSONComponent {
 
     companion object{
         /**
          * @return a new JSONValue
          */
-        @JvmStatic fun newValue(value: Any): JSONValue {
+        @JvmStatic fun newValue(value: Any?): JSONValue {
             return JSONValue(value)
         }
     }

@@ -12,7 +12,7 @@ class JSONSerializer private constructor(private val buffer: StringBuilder, priv
          * Creates a new JSONWriter.
          * @return a new JSONWriter
          */
-        @JvmStatic fun newWriter(): JSONSerializer {
+        @JvmStatic fun newSerializer(): JSONSerializer {
             return JSONSerializer(StringBuilder(), 0)
         }
     }

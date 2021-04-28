@@ -1,9 +1,10 @@
 import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  *
  */
-class JSONManager private constructor(private val components: HashMap<String, JSONComponent>) {
+class JSONManager private constructor(private val jsonRoots: HashMap<String, JSONComponent>, private val instantiator: JSONInstantiator) {
 
     companion object {
         /**
@@ -11,7 +12,7 @@ class JSONManager private constructor(private val components: HashMap<String, JS
          * @return a new JSONManager.
          */
         @JvmStatic fun newManager() : JSONManager {
-            return JSONManager(HashMap())
+            return JSONManager(HashMap(), JSONInstantiator.newInstantiator())
         }
 
         /**
@@ -20,7 +21,7 @@ class JSONManager private constructor(private val components: HashMap<String, JS
          * @return a new JSONManager.
          */
         @JvmStatic fun newPopulatedManager(components: HashMap<String, JSONComponent>) : JSONManager {
-            return JSONManager(components)
+            return JSONManager(components, JSONInstantiator.newInstantiator())
         }
     }
 
@@ -28,25 +29,44 @@ class JSONManager private constructor(private val components: HashMap<String, JS
      * @param fileName
      */
     fun createJSON(fileName: String) {
-        if(components.containsKey(fileName)) return
+        if(jsonRoots.containsKey(fileName)) return
     }
 
     /**
      * Deletes the JSON file with the given name.
-     * @param fileName Name of the JSON file to be deleted
+     * @param fileName Name of the JSON file to be deleted.
      */
     fun deleteJSON(fileName: String) {
-        components.remove(fileName)
+        jsonRoots.remove(fileName)
     }
 
     /**
      * Serializes the JSON file stored in memory with a given name.
-     * @param fileName Name of the JSON file
-     * @param path Path to the directory where the JSON file will be created
+     * @param fileName Name of the JSON file to be serialized.
+     * @param path Path to the directory where the JSON file will be created.
      */
     fun serializeJson(fileName: String, path: Path) {
-        val writer = JSONWriter.newWriter(path.toString() + "\\${fileName}.txt")
-        components[fileName]?.accept(writer)
+        val writer = JSONSerializer.newSerializer()
+        writer.serialize(jsonRoots.getValue(fileName))
+        writer.writeToFile(Paths.get(path.toString() + "\\${fileName}.txt"))
+    }
+
+    /**
+     * @param fileName Name of the JSON file to be searched.
+     * @param keyword The property being searched.
+     * @return a list with the JSONObjects containing the desired property.
+     */
+    fun searchObjectProperty(fileName: String, keyword: String): ArrayList<JSONObject>? {
+        val searcher = JSONPropertySearcher.newPropertySearcher()
+        return searcher.search(keyword, jsonRoots.getValue(fileName))
+    }
+
+    /**
+     * @param fileName
+     * @param obj
+     */
+    fun instantiateJSON(fileName: String, obj: Any) {
+        jsonRoots[fileName] = instantiator.instantiate(obj)
     }
 
 }
