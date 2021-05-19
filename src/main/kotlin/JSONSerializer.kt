@@ -103,4 +103,11 @@ class JSONSerializer private constructor(private val buffer: StringBuilder, priv
         }
     }
 
+    /**
+     *
+     */
+    fun flush() {
+        buffer.delete(0, buffer.length)
+    }
+
 }

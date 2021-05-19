@@ -20,9 +20,9 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
          * @param components
          * @return a new JSONManager.
          */
-        @JvmStatic fun newPopulatedManager(components: HashMap<String, JSONComponent>) : JSONManager {
+        /**@JvmStatic fun newPopulatedManager(components: HashMap<String, JSONComponent>) : JSONManager {
             return JSONManager(components, JSONInstantiator.newInstantiator())
-        }
+        }*/
     }
 
     /**
@@ -30,6 +30,10 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
      */
     fun createJSON(fileName: String) {
         if(jsonRoots.containsKey(fileName)) return
+    }
+
+    fun addJSON(fileName: String, component: JSONComponent) {
+        if (!jsonRoots.containsKey(fileName) && component != null) jsonRoots[fileName] = component
     }
 
     /**
@@ -67,6 +71,14 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
      */
     fun instantiateJSON(fileName: String, obj: Any) {
         jsonRoots[fileName] = instantiator.instantiate(obj)
+    }
+
+    /**
+     * @param fileName
+     */
+    fun openGUIForFile(fileName: String) {
+        val gui = GUI.newGUI(jsonRoots.getValue(fileName))
+        gui.open()
     }
 
 }
