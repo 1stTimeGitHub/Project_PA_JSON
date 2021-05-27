@@ -39,6 +39,9 @@ class IconSetup : GUISetup {
 
     }
 
+    /**
+     * @param treeItems
+     */
     private fun addIcons(treeItems: Array<TreeItem>) {
         for (treeItem in treeItems) {
             if (treeItem.data is JSONValue)
@@ -126,6 +129,10 @@ class ExcludeNodes : GUISetup {
 
     }
 
+    /**
+     * @param treeItems
+     * @param excludeNode
+     */
     private fun excludeNodes(treeItems: Array<TreeItem>, excludeNode: Int) {
         for (treeItem in treeItems) {
             when {
@@ -216,6 +223,11 @@ class RenameNodes : GUISetup {
 
     }
 
+    /**
+     * @param treeItems
+     * @param nodesToRename
+     * @param newName
+     */
     private fun renameNodes(treeItems: Array<TreeItem>, nodesToRename: Int, newName: String) {
         for (treeItem in treeItems) {
             when {

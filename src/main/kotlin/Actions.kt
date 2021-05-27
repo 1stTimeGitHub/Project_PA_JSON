@@ -14,7 +14,7 @@ class WriteToFile : Action {
         val file = File("src\\main\\resources\\SerializedJSON.txt")
 
         file.bufferedWriter().use { out ->
-            out.write(gui.label.text)
+            out.write(gui.getLabelText())
         }
     }
 }
@@ -40,7 +40,8 @@ class EditProperty : Action {
 
         button.addSelectionListener(object : SelectionAdapter() {
             override fun widgetSelected(e: SelectionEvent) {
-                val selectedItem = gui.tree.selection.first()
+                val selectedItem = gui.getSelectedItem()
+
                 if (selectedItem.data is JSONValue) {
                     selectedItem.text = textField.text
                     val newValue = JSONValue.newValue(textField.text)
@@ -68,7 +69,7 @@ class Validate : Action {
     override val name = "Validate"
 
     override fun execute(gui: GUI) {
-        val validation = validate(gui.tree.items)
+        val validation = validate(gui.getTreeItems())
 
         val shell = Shell(Display.getDefault())
         shell.text = "Edit"
@@ -91,6 +92,10 @@ class Validate : Action {
 
     }
 
+    /**
+     * @param treeItems The tree items being validated
+     * @return True if all items were validated successfully, otherwise returns False
+     */
     private fun validate(treeItems: Array<TreeItem>): Boolean {
         for (treeItem in treeItems) {
             if (treeItem.text.isNullOrEmpty() or !validate(treeItem.items)) {

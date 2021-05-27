@@ -77,7 +77,6 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
      * @param fileName
      */
     fun openGUIForFile(fileName: String) {
-        //val gui = GUI.newGUI(jsonRoots.getValue(fileName))
         val gui = GUI()
         gui.open(jsonRoots.getValue(fileName))
     }

@@ -73,6 +73,10 @@ class JSONTreeBuilder private constructor(private val serializer: JSONSerializer
 
     }
 
+    /**
+     * @param root Root of the Tree
+     * @param component Component to populate the tree
+     */
     fun buildTree(root: Tree, component: JSONComponent) {
         this.root = root
         text = ""

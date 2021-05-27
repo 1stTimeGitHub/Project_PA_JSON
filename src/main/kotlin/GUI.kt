@@ -60,6 +60,9 @@ class GUI {
          */
     }
 
+    /**
+     * @param component
+     */
     fun open(component: JSONComponent) {
         if (this::guiSetup.isInitialized) {
             guiSetup.setup(component)
@@ -142,5 +145,20 @@ class GUI {
         }
         items.forEach { it.traverse() }
     }
+
+    /**
+     * @return The tree items.
+     */
+    fun getTreeItems(): Array<TreeItem> = tree.items
+
+    /**
+     * @return The selected item.
+     */
+    fun getSelectedItem(): TreeItem = tree.selection.first()
+
+    /**
+     * @return The text being displayed by the label.
+     */
+    fun getLabelText(): String = label.text
 
 }
