@@ -1,4 +1,7 @@
 import org.eclipse.swt.SWT
+import org.eclipse.swt.graphics.Device
+import org.eclipse.swt.graphics.Image
+import org.eclipse.swt.widgets.Display
 import org.eclipse.swt.widgets.Tree
 import org.eclipse.swt.widgets.TreeItem
 
@@ -17,11 +20,11 @@ class JSONTreeBuilder private constructor(private val serializer: JSONSerializer
     override fun visit(component: JSONObject) {
         val objectItem : TreeItem = if(!this::parent.isInitialized) TreeItem(root, SWT.NONE) else TreeItem(parent, SWT.NONE)
 
-        if(text.isNullOrEmpty())
+        if(text.isEmpty())
             text = "(object)"
 
         objectItem.text = text
-        objectItem.data = serializer.serialize(component)
+        objectItem.data = component
         serializer.flush()
         parent = objectItem
 
@@ -38,11 +41,11 @@ class JSONTreeBuilder private constructor(private val serializer: JSONSerializer
     override fun visit(component: JSONArray) {
         val arrayItem : TreeItem = if(!this::parent.isInitialized) TreeItem(root, SWT.NONE) else TreeItem(parent, SWT.NONE)
 
-        if(text.isNullOrEmpty())
+        if(text.isEmpty())
             text = "(array)"
 
         arrayItem.text = text
-        arrayItem.data = serializer.serialize(component)
+        arrayItem.data = component
         serializer.flush()
 
         parent = arrayItem
@@ -59,13 +62,13 @@ class JSONTreeBuilder private constructor(private val serializer: JSONSerializer
     override fun visit(component: JSONValue) {
         val valueItem : TreeItem = if(!this::parent.isInitialized) TreeItem(root, SWT.NONE) else TreeItem(parent, SWT.NONE)
 
-        if(text.isNullOrEmpty())
-            text = "(value) : $component"
+        text = if(text.isEmpty())
+            "(value) : $component"
         else
-            text = "$text: $component"
+            "$text: $component"
 
         valueItem.text = text
-        valueItem.data = serializer.serialize(component)
+        valueItem.data = component
         serializer.flush()
 
     }
