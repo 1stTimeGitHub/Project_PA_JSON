@@ -17,7 +17,7 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
 
         /**
          * Creates a new JSONManager from a given HashMap.
-         * @param components
+         * @param
          * @return a new JSONManager.
          */
         /**@JvmStatic fun newPopulatedManager(components: HashMap<String, JSONComponent>) : JSONManager {
@@ -33,7 +33,7 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
     }
 
     fun addJSON(fileName: String, component: JSONComponent) {
-        if (!jsonRoots.containsKey(fileName) && component != null) jsonRoots[fileName] = component
+        if (!jsonRoots.containsKey(fileName)) jsonRoots[fileName] = component
     }
 
     /**
@@ -60,7 +60,7 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
      * @param keyword The property being searched.
      * @return a list with the JSONObjects containing the desired property.
      */
-    fun searchObjectProperty(fileName: String, keyword: String): ArrayList<JSONObject>? {
+    fun searchObjectProperty(fileName: String, keyword: String): ArrayList<JSONObject> {
         val searcher = JSONPropertySearcher.newPropertySearcher()
         return searcher.search(keyword, jsonRoots.getValue(fileName))
     }
@@ -77,8 +77,17 @@ class JSONManager private constructor(private val jsonRoots: HashMap<String, JSO
      * @param fileName
      */
     fun openGUIForFile(fileName: String) {
-        val gui = GUI.newGUI(jsonRoots.getValue(fileName))
-        gui.open()
+        //val gui = GUI.newGUI(jsonRoots.getValue(fileName))
+        val gui = GUI()
+        gui.open(jsonRoots.getValue(fileName))
+    }
+
+    /**
+     * @param fileName
+     */
+    fun openGUIWithInjection(fileName: String) {
+        val gui = Injector.create(GUI::class)
+        gui.open(jsonRoots.getValue(fileName))
     }
 
 }
